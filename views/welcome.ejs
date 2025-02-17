@@ -8,7 +8,7 @@
     <script>
       setTimeout(() => {
         document.getElementById("password").textContent =
-          "Adgangskode: ********";
+          "Beklager, håber ikke der var nogen der så det";
       }, 10000);
     </script>
     <style>
@@ -18,11 +18,14 @@
       p {
         margin-bottom: 50px;
       }
+      h2 {
+        margin-bottom: 20px;
+      }
     </style>
   </head>
   <body>
     <h1>Velkommen, <%= username %>!</h1>
-    <h1 id="password">Adgangskode: <%= password %></h1>
+    <h2 id="password">Ups, din adgangskode, <%= password %>, skulle ikke være vist</h1>
     <p>Bruger oprettet den: <%= createdAt %></p>
     <form action="/logout" method="GET">
       <button type="submit">Log ud</button>
