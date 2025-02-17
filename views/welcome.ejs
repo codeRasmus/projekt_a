@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Velkommen</title>
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      setTimeout(() => {
+        document.getElementById("password").textContent =
+          "Adgangskode: ********";
+      }, 10000);
+    </script>
+    <style>
+      * {
+        color: #eee;
+      }
+      p {
+        margin-bottom: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Velkommen, <%= username %>!</h1>
+    <h1 id="password">Adgangskode: <%= password %></h1>
+    <p>Bruger oprettet den: <%= createdAt %></p>
+    <form action="/logout" method="GET">
+      <button type="submit">Log ud</button>
+  </body>
+</html>

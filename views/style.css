@@ -1,0 +1,89 @@
+@font-face {
+  font-family: "LaFontaine";
+  src: url("lafontaine-regular-webfont.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "LaFontaine", sans-serif;
+}
+
+body {
+  background-color: #282828;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.form_wrapper {
+  background-color: #eee;
+  padding: 70px 50px;
+  border-radius: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form label {
+  margin-bottom: 5px;
+}
+
+form input {
+  border: 1px solid #ccc;
+  outline: none;
+  border-radius: 8px;
+  height: 40px;
+  width: 300px;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #f9f9f9;
+}
+
+form input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  background-color: #fff;
+}
+
+form input::placeholder {
+  color: #aaa;
+  font-size: 14px;
+}
+
+form button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
+
+button {
+  height: 40px;
+  width: 300px;
+  margin: 0 0 20px 0;
+}
+
+h1,
+h2 {
+  font-weight: 200;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}

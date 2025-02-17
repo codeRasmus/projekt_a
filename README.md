@@ -1,3 +1,4 @@
 # Project A
 
-A brief description of what this project does.
+Udvikl et system hvor følsomme oplysninger kun kan tilgås af brugeren
+inden for et bestemt tidsrum efter login.
