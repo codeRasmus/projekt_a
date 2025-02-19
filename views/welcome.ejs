@@ -6,10 +6,35 @@
     <title>Velkommen</title>
     <link rel="stylesheet" href="style.css" />
     <script>
-      setTimeout(() => {
+      // Function to hide the password
+      function hidePassword() {
         document.getElementById("password").textContent =
-          "Beklager, håber ikke der var nogen der så det";
-      }, 10000);
+          "Hold musen over for at se password";
+      }
+
+      // Function to show the password
+      function showPassword() {
+        document.getElementById("password").textContent = "<%= password %>";
+      }
+
+      // Function to disable hover functionality after 10s
+      function disableHoverAfterTimeout() {
+        setTimeout(function () {
+          const passwordElement = document.getElementById("password");
+          passwordElement.removeEventListener("mouseover", showPassword);
+          passwordElement.removeEventListener("mouseleave", hidePassword);
+          passwordElement.textContent = "Bim bam busse";
+          passwordElement.style.cursor = "default";
+        }, 10000); // 10s
+      }
+
+      // Set up event listeners after page load
+      window.onload = function () {
+        const passwordElement = document.getElementById("password");
+        passwordElement.addEventListener("mouseover", showPassword);
+        passwordElement.addEventListener("mouseleave", hidePassword);
+        disableHoverAfterTimeout();
+      };
     </script>
     <style>
       * {
@@ -21,13 +46,17 @@
       h2 {
         margin-bottom: 20px;
       }
+      #password {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
     <h1>Velkommen, <%= username %>!</h1>
-    <h2 id="password">Ups, din adgangskode, <%= password %>, skulle ikke være vist</h1>
+    <h2 id="password">Hold musen over for at se password</h2>
     <p>Bruger oprettet den: <%= createdAt %></p>
     <form action="/logout" method="GET">
       <button type="submit">Log ud</button>
+    </form>
   </body>
 </html>

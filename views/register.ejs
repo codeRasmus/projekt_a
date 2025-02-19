@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="form_wrapper">
+      <form action="/register" method="POST" autocomplete="off">
+        <h1>Opret bruger</h1>
+        <% if (error) { %>
+        <div class="error_message"><%= error %></div>
+        <% } %>
+        <label for="userid">Brugernavn:</label>
+        <input type="text" id="userid" name="userid" required /><br />
+        <label for="password">Adgangskode:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          autocomplete="new-password"
+          minlength="6"
+        /><br />
+        <button type="submit">Opret bruger</button>
+      </form>
+      <form action="/login" method="GET">
+        <button type="submit">Tilbage til login</button>
+      </form>
+    </div>
+  </body>
+</html>

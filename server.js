@@ -6,16 +6,20 @@ const app = express();
 const port = 3000;
 const ip = "127.0.0.1";
 
+// Setup EJS
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
+// Initializing database connection
 const db = new sqlite3.Database("users.db", (err) => {
   if (err) {
     console.error("Fejl ved oprettelse af database", err.message);
     process.exit(1);
   }
+  console.log("Database oprettet/forbundet");
 });
 
+// Create user table if it doesn't exist
 db.serialize(() => {
   db.run(
     `CREATE TABLE IF NOT EXISTS user (
@@ -28,115 +32,115 @@ db.serialize(() => {
 });
 
 app.use(express.static("views"));
-
 app.use(express.urlencoded({ extended: true }));
 
 // Redirect root route to login page
 app.get("/", (req, res) => {
+  console.log("Root routing til /login");
   res.redirect("/login");
 });
 
 // Serve the login page
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "login.html"));
+  console.log("Serverer login side");
+  res.render("login", { error: null }); // Send 'error' selv hvis den er tom
 });
 
+// Logout route
 app.get("/logout", (req, res) => {
+  console.log("Bruger logger ud");
   res.redirect("/login");
 });
 
 // Serve the register page
 app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "register.html"));
+  console.log("Serverer register side");
+  res.render("register", { error: null }); // Render EJS register page
 });
 
 // Function to add a new user
 function addUser(userid, password, res) {
-  try {
-    // Check if username contains valid characters
-    if (!/^[a-zA-Z0-9_]+$/.test(userid)) {
-      res
-        .status(400)
-        .send(
-          "❌ Invalid username. Only letters, numbers and underscores are allowed."
-        );
-      return;
+  if (!/^[a-zA-Z0-9_]+$/.test(userid)) {
+    return res.render("register", {
+      error: "❌ Ugyldigt brugernavn.",
+    });
+  }
+
+  db.get("SELECT * FROM user WHERE userid = ?", [userid], (err, row) => {
+    if (err) {
+      return res.render("register", {
+        error: "Fejl ved databaseforespørgsel.",
+      });
     }
 
-    // Check if username already exists in the database
-    db.get("SELECT * FROM user WHERE userid = ?", [userid], (err, row) => {
+    if (row) {
+      return res.render("register", {
+        error: "⛔ Brugernavnet er allerede taget.",
+      });
+    }
+
+    bcrypt.genSalt(10, (err, salt) => {
+      console.log(salt);
       if (err) {
-        res.status(500).send("Fejl ved databaseforespørgsel.");
-        return;
+        return res.render("register", {
+          error: "Fejl ved generering af salt.",
+        });
       }
 
-      if (row) {
-        res
-          .status(400)
-          .send("⛔ Brugernavnet er allerede taget, vælg venligst et andet.");
-        return;
-      }
-
-      // Generate salt and hash password
-      bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(password, salt, (err, hash) => {
         if (err) {
-          res.status(500).send("Fejl ved generering af salt.");
-          return;
+          return res.render("register", {
+            error: "Fejl ved hashing af password.",
+          });
         }
 
-        bcrypt.hash(password, salt, (err, hash) => {
+        const stmt = db.prepare(
+          "INSERT INTO user (userid, password) VALUES (?, ?)"
+        );
+        stmt.run(userid, hash, function (err) {
           if (err) {
-            res.status(500).send("Fejl ved hashing af password.");
-            return;
+            return res.render("register", {
+              error: "Fejl ved indsættelse i database.",
+            });
           }
-
-          // Insert the new user into the database
-          const stmt = db.prepare(
-            "INSERT INTO user (userid, password) VALUES (?, ?)"
-          );
-          stmt.run(userid, hash, function (err) {
-            if (err) {
-              res.status(500).send("Fejl ved indsættelse i database.");
-              return;
-            }
-            stmt.finalize();
-            res.sendFile(path.join(__dirname, "views", "login.html"));
-          });
+          stmt.finalize();
+          console.log(userid, "oprettet i databasen");
+          res.redirect("/login");
         });
       });
     });
-  } catch (error) {
-    res.status(500).send("Fejl: " + error.message);
-  }
+  });
 }
 
 // Function to handle user login
 function authenticateUser(userid, password, res) {
+  console.log("Forsøger at godkende bruger:", userid);
+
   db.get("SELECT * FROM user WHERE userid = ?", [userid], (err, row) => {
     if (err) {
-      res.status(500).send("Fejl ved databaseforespørgsel.");
-      return;
+      return res.render("login", { error: "Fejl ved databaseforespørgsel." });
     }
 
     if (!row) {
-      res.status(400).send("⛔ Brugernavnet findes ikke.");
-      return;
+      return res.render("login", { error: "⛔ Brugernavnet findes ikke." });
     }
 
     bcrypt.compare(password, row.password, (err, isMatch) => {
       if (err) {
-        res.status(500).send("Fejl ved password sammenligning.");
-        return;
+        return res.render("login", {
+          error: "Fejl ved password sammenligning.",
+        });
       }
 
       if (isMatch) {
-        res.render("welcome", {
+        console.log("Login succesfuldt");
+        return res.render("welcome", {
           username: userid,
           createdAt: row.created_at,
           password: password,
         });
       } else {
-        res.status(400).send("⛔ Forkert adgangskode.");
+        return res.render("login", { error: "⛔ Forkert adgangskode." });
       }
     });
   });
@@ -144,22 +148,33 @@ function authenticateUser(userid, password, res) {
 
 // Handle user login (POST)
 app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log(username, "forsøger login");
+
   if (!username || !password) {
-    return res.status(400).send("❌ Brugernavn og adgangskode kræves.");
+    return res.render("login", {
+      error: "❌ Brugernavn og adgangskode kræves.",
+    });
   }
   authenticateUser(username, password, res);
 });
 
 // Handle user registration (POST)
 app.post("/register", (req, res) => {
-  const { userid, password } = req.body;
+  const userid = req.body.userid;
+  const password = req.body.password;
+  console.log(userid, "forsøger at oprette bruger");
+
   if (!userid || !password) {
-    return res.status(400).send("❌ Brugernavn og adgangskode kræves.");
+    return res.render("register", {
+      error: "❌ Brugernavn og adgangskode kræves.",
+    });
   }
   addUser(userid, password, res);
 });
 
+// Start the server
 app.listen(port, ip, () => {
   console.log(`Server kører på http://${ip}:${port}/`);
 });
