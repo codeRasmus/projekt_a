@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const bcrypt = require("bcryptjs");
 const sqlite3 = require("sqlite3").verbose();
 const app = express();
@@ -9,6 +8,8 @@ const ip = "127.0.0.1";
 // Setup EJS
 app.set("view engine", "ejs");
 app.set("views", "./views");
+app.use(express.static("views"));
+app.use(express.urlencoded({ extended: true }));
 
 // Initializing database connection
 const db = new sqlite3.Database("users.db", (err) => {
@@ -30,9 +31,6 @@ db.serialize(() => {
     )`
   );
 });
-
-app.use(express.static("views"));
-app.use(express.urlencoded({ extended: true }));
 
 // Redirect root route to login page
 app.get("/", (req, res) => {
@@ -79,8 +77,7 @@ function addUser(userid, password, res) {
       });
     }
 
-    bcrypt.genSalt(10, (err, salt) => {
-      console.log(salt);
+    bcrypt.genSalt(12, (err, salt) => {
       if (err) {
         return res.render("register", {
           error: "Fejl ved generering af salt.",
@@ -134,6 +131,7 @@ function authenticateUser(userid, password, res) {
 
       if (isMatch) {
         console.log("Login succesfuldt");
+        console.log("Serverer welcome side");
         return res.render("welcome", {
           username: userid,
           createdAt: row.created_at,

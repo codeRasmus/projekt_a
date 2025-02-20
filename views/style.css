@@ -21,6 +21,7 @@ body {
 }
 
 .form_wrapper {
+  max-height: 600px;
   background-color: #eee;
   padding: 70px 50px;
   border-radius: 20px;
@@ -72,7 +73,7 @@ form button:hover {
   background-color: #0056b3;
 }
 
-button {
+form button {
   height: 40px;
   width: 300px;
   margin: 0 0 20px 0;
@@ -86,6 +87,16 @@ h2 {
 h1 {
   font-size: 2.5rem;
   margin-bottom: 30px;
+}
+
+#password {
+  background-color: rgb(1, 189, 1);
+  padding: 10px;
+  margin-bottom: 30px;
+  text-align: center;
+  border-radius: 5px;
+  width: 500px;
+  transition: background-color 0.3s;
 }
 
 .error_message {

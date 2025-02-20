@@ -25,6 +25,7 @@
           passwordElement.removeEventListener("mouseleave", hidePassword);
           passwordElement.textContent = "Bim bam busse";
           passwordElement.style.cursor = "default";
+          passwordElement.style.backgroundColor = "transparent";
         }, 10000); // 10s
       }
 
@@ -56,7 +57,7 @@
     <h2 id="password">Hold musen over for at se password</h2>
     <p>Bruger oprettet den: <%= createdAt %></p>
     <form action="/logout" method="GET">
-      <button type="submit">Log ud</button>
+      <button id="logout" type="submit">Log ud</button>
     </form>
   </body>
 </html>

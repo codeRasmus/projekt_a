@@ -14,11 +14,16 @@
         <div class="error_message"><%= error %></div>
         <% } %>
         <label for="userid">Brugernavn:</label>
-        <input type="text" id="userid" name="userid" required /><br />
+        <input
+          type="text"
+          id="userid"
+          name="userid"
+          required
+          minlength="6"
+        /><br />
         <label for="password">Adgangskode:</label>
         <input
           type="password"
-          id="password"
           name="password"
           required
           autocomplete="new-password"
