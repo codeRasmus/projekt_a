@@ -21,16 +21,16 @@ const db = new sqlite3.Database("users.db", (err) => {
 });
 
 // Create user table if it doesn't exist
-db.serialize(() => {
-  db.run(
-    `CREATE TABLE IF NOT EXISTS user (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userid TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )`
-  );
-});
+// db.serialize(() => {
+//   db.run(
+//     `CREATE TABLE IF NOT EXISTS user (
+//       id INTEGER PRIMARY KEY AUTOINCREMENT,
+//       userid TEXT NOT NULL UNIQUE,
+//       password TEXT NOT NULL,
+//       created_at TEXT DEFAULT CURRENT_TIMESTAMP
+//     )`
+//   );
+// });
 
 // Redirect root route to login page
 app.get("/", (req, res) => {
